@@ -1,0 +1,64 @@
+<%= flash[:notice] %>
+<br>
+<% unless @people.blank? %>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>MRN</th>
+        <th>Street Address</th>
+        <th>Suburb</th>
+        <th>Postcode</th>
+        <th>Destination</th>
+        <th>Distance(m)</th>
+        <th>Distance(text)</th>
+        <th>Time(secs)</th>
+        <th>Time(text)</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% @people.each do |person| %>
+          <tr>
+            <td><%= person.id %></td>
+            <td><%= person.name %></td>
+            <td><%= person.mrn %></td>
+            <td><%= person.street_address %></td>
+            <td><%= person.suburb %></td>
+            <td><%= person.postcode %></td>
+            <td><%= person.destination %></td>
+            <td><%= person.distance_meters %></td>
+            <td><%= person.distance_text %></td>
+            <td><%= person.duration_seconds %></td>
+            <td><%= person.duration_text %></td>
+          </tr>
+        <% end %>
+    </tbody>
+  </table>
+  <%= link_to 'Export as CSV', export_people_path(format: "csv") %>
+  <p>
+    <%= "Average Distance = #{Person.average_distance}km," %>
+    <%= "Average Time = #{distance_of_time_in_words(Person.average_time.seconds)}" %>
+  <br>
+  <%= form_for :person, url: calculate_distance_people_path do |f| %>
+    <p>
+      <%= f.label :destination %><br>
+      <%= f.text_field :destination %>
+    </p>
+    <p>
+      <%= f.submit 'Calculate Distance' %>
+    </p>
+  <% end %>
+<% end %>
+<br>
+<div>
+<h3>Import a CSV File</h3>
+  <%= form_tag import_people_path, multipart: true do %>
+    <%= file_field_tag :file %>
+    <%= submit_tag "Import CSV" %>
+  <% end %>
+</div>
+<br>
+<div>
+  <%= link_to 'Delete All', delete_all_people_path, method: :delete, data: { confirm: 'Are you sure?' } %>
+</div>
