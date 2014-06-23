@@ -15,3 +15,6 @@
 /log/*.log
 /tmp
 .env
+
+# Ignore API key initializer
+/config/initializers/google_distance_api.rb

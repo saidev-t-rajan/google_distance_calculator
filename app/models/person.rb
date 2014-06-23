@@ -1,7 +1,7 @@
 class Person < ActiveRecord::Base
   require 'csv'
   require 'net/http'
-  API_KEY = 'api_key'
+  Rails.env.production? ? API_KEY = ENV['GOOGLE_DISTANCE_API_KEY'] : GOOGLE_DISTANCE_API_KEY
 
   def self.calculate_distance( destination )
     all.each do |person|
