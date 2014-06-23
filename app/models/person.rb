@@ -7,8 +7,8 @@ class Person < ActiveRecord::Base
     all.each do |person|
       logger.info "Calculating for person #{person.id}: #{person.name}"
 
-      escaped_origin = CGI.escape( "#{person.street_address} #{person.suburb} #{person.postcode}" )
-      escaped_destination = CGI.escape( destination )
+      escaped_origin = CGI.escape( "#{person.street_address} #{person.suburb} Australia #{person.postcode}" )
+      escaped_destination = CGI.escape( "#{destination} Australia" )
       uri = URI(URI.encode("https://maps.googleapis.com/maps/api/distancematrix/json?origins=#{escaped_origin}&destinations=#{escaped_destination}&key=#{API_KEY}"))
       distance_hash = JSON.parse( Net::HTTP.get(uri) )
 
