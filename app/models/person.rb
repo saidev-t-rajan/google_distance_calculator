@@ -7,21 +7,25 @@ class Person < ActiveRecord::Base
     all.each do |person|
       logger.info "Calculating for person #{person.id}: #{person.name}"
 
-      escaped_origin = CGI.escape( "#{person.street_address} #{person.suburb} Australia #{person.postcode}" )
-      escaped_destination = CGI.escape( "#{destination} Australia" )
-      uri = URI(URI.encode("https://maps.googleapis.com/maps/api/distancematrix/json?origins=#{escaped_origin}&destinations=#{escaped_destination}&key=#{API_KEY}"))
-      distance_hash = JSON.parse( Net::HTTP.get(uri) )
+      if person.street_address.blank? && person.suburb.blank? && person.postcode.blank?
+        logger.info " Address blank for person #{person.id}: #{person.name}"
+      else
+        escaped_origin = CGI.escape( "#{person.street_address} #{person.suburb} Australia #{person.postcode}" )
+        escaped_destination = CGI.escape( "#{destination} Australia" )
+        uri = URI(URI.encode("https://maps.googleapis.com/maps/api/distancematrix/json?origins=#{escaped_origin}&destinations=#{escaped_destination}&key=#{API_KEY}"))
+        distance_hash = JSON.parse( Net::HTTP.get(uri) )
 
-      logger.info "#{distance_hash}"
+        logger.info "#{distance_hash}"
 
-      if distance_hash['status'] == 'OK' && distance_hash['rows'].first['elements'].first['status'] == 'OK'
-        person.destination = destination
-        person.distance_meters = distance_hash['rows'].first['elements'].first['distance']['value']
-        person.distance_text = distance_hash['rows'].first['elements'].first['distance']['text']
-        person.duration_seconds = distance_hash['rows'].first['elements'].first['duration']['value']
-        person.duration_text = distance_hash['rows'].first['elements'].first['duration']['text']
+        if distance_hash['status'] == 'OK' && distance_hash['rows'].first['elements'].first['status'] == 'OK'
+          person.destination = destination
+          person.distance_meters = distance_hash['rows'].first['elements'].first['distance']['value']
+          person.distance_text = distance_hash['rows'].first['elements'].first['distance']['text']
+          person.duration_seconds = distance_hash['rows'].first['elements'].first['duration']['value']
+          person.duration_text = distance_hash['rows'].first['elements'].first['duration']['text']
 
-        person.save
+          person.save
+        end
       end
     end
   end
