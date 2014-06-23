@@ -1,7 +1,7 @@
 class Person < ActiveRecord::Base
   require 'csv'
   require 'net/http'
-  Rails.env.production? ? API_KEY = ENV['GOOGLE_DISTANCE_API_KEY'] : GOOGLE_DISTANCE_API_KEY
+  API_KEY = Rails.env.production? ? ENV['GOOGLE_DISTANCE_API_KEY'] : GOOGLE_DISTANCE_API_KEY
 
   def self.calculate_distance( destination )
     all.each do |person|
@@ -14,7 +14,7 @@ class Person < ActiveRecord::Base
 
       logger.info "#{distance_hash}"
 
-      if distance_hash['status'] = 'OK' && distance_hash['rows'].first['elements'].first['status'] = 'OK'
+      if distance_hash['status'] == 'OK' && distance_hash['rows'].first['elements'].first['status'] == 'OK'
         person.destination = destination
         person.distance_meters = distance_hash['rows'].first['elements'].first['distance']['value']
         person.distance_text = distance_hash['rows'].first['elements'].first['distance']['text']
@@ -36,12 +36,15 @@ class Person < ActiveRecord::Base
                         suburb:         people_hash_csv["Suburb"],
                         postcode:       people_hash_csv["Postcode"]
                       }
-        person = where(id: people_hash[:mrn])
 
-        if person.count == 1
-          person.first.update_attributes(people_hash)
-        else
-          create(people_hash)
+        unless people_hash[:mrn].blank?
+          person = where(mrn: people_hash[:mrn])
+
+          if person.count == 1
+            person.first.update_attributes(people_hash)
+          else
+            create(people_hash)
+          end
         end
       end
     end
