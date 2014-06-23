@@ -18,7 +18,7 @@ class PeopleController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to(people_path) }
-      format.csv { send_data @people.as_csv }
+      format.csv { send_data @people.as_csv, filename: 'distance_calculations.csv' }
     end
   end
 
