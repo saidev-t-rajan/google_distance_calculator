@@ -64,10 +64,10 @@ class Person < ActiveRecord::Base
   end
 
   def self.average_distance
-    ((Person.average( :distance_meters ) || 0) / 1000).round(3)
+    ((average( :distance_meters ) || 0) / 1000).round(3)
   end
 
   def self.average_time
-    (Person.average( :duration_seconds ) || 0)
+    average( :duration_seconds ) || 0
   end
 end
