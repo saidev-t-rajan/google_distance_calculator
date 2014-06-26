@@ -44,7 +44,7 @@ class Person < ActiveRecord::Base
         unless people_hash[:mrn].blank?
           person = where(mrn: people_hash[:mrn])
 
-          if person.count == 1
+          if person.length == 1
             person.first.update_attributes(people_hash)
           else
             create(people_hash)
